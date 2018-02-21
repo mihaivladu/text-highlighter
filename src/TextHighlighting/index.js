@@ -31,10 +31,12 @@ class TextHighlighting extends Component {
     }
 
     setWaitingSelection() {
-        this.setState({
-            waitingSelection: null,
-            viewCommentBox: false
-        });
+        if (this.state.viewCommentBox) {
+            this.setState({
+                waitingSelection: null,
+                viewCommentBox: false
+            });
+        }
 
         const selection = window.getSelection();
 
@@ -101,6 +103,17 @@ class TextHighlighting extends Component {
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
                         <path fill="#FFFFFF" fillRule="nonzero" d="M5 5V.343h2V5h4.657v2H7v4.657H5V7H.343V5H5z" />
                     </svg>
+                </div>
+                <div className={cn(styles['comment-box-container'])}
+                     style={{top: selectionApproveHandlerTop}}>
+                    <div>Add a comment</div>
+                    <div className={styles['textarea-container']}>
+                        <textarea rows="2" />
+                    </div>
+                    <div className={styles['buttons-container']}>
+                        <div className={styles['submit-btn']}>Submit</div>
+                        <div className={styles['cancel-btn']}>Cancel</div>
+                    </div>
                 </div>
             </div>
         );
