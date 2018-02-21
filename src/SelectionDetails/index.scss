@@ -1,0 +1,19 @@
+.font-bold {
+  font-weight: bold;
+}
+
+.selections-list {
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+
+  .selection-item {
+    margin-bottom: 10px;
+
+    .text {
+      font-style: italic;
+    }
+  }
+}

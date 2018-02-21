@@ -1,0 +1,1 @@
+export const ADD_NEW_SELECTION = 'add_new_selection';
