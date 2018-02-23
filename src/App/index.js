@@ -1,4 +1,5 @@
 import React from 'react';
+import nl2br from 'react-nl2br';
 
 import TEXT from '../constants/text';
 
@@ -11,8 +12,9 @@ const App = () => (
     <div className={styles['main-container']}>
         <div className={styles['text-container']}>
             <SelectionHandler>
+                Simple text
                 <h3>Some title</h3>
-                {TEXT}
+                {nl2br(TEXT)}
             </SelectionHandler>
         </div>
         <div className={styles['details-container']}>

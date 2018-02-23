@@ -1,10 +1,14 @@
-.text-container {
+.highlighting-container {
   position: relative;
+
+  .selected-text {
+    background-color: orangered;
+  }
 
   .selection-approve-handler {
     position: absolute;
     top: 0;
-    right: -20px;
+    right: -30px;
     width: 20px;
     height: 20px;
     display: flex;
@@ -13,7 +17,7 @@
     -webkit-border-radius: 100%;
     -moz-border-radius: 100%;
     border-radius: 100%;
-    background-color: #aaa;
+    background-color: #e0e0e0;
     color: white;
     cursor: pointer;
 
@@ -25,7 +29,7 @@
   .comment-box-container {
     position: absolute;
     top: 0;
-    right: -20px;
+    right: -262px;
     display: flex;
     flex-direction: column;
     background-color: white;
@@ -39,10 +43,13 @@
     }
 
     .textarea-container {
-      flex: 1;
+      display: flex;
+      margin-bottom: 10px;
 
       textarea {
         resize: none;
+        flex-basis: 100%;
+        outline: none;
       }
     }
 
@@ -56,6 +63,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        cursor: pointer;
       }
 
       .submit-btn {

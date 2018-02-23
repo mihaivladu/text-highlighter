@@ -38,8 +38,6 @@ SelectionDetails.propTypes = {
 };
 
 const mapStateToProps = (state) => {
-    console.log(state);
-
     return {
         selections: state
     };
