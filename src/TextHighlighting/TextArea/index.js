@@ -12,6 +12,7 @@ class TextArea extends Component {
     static propTypes = {
         currentSelection: PropTypes.object,
         viewCommentBox: PropTypes.bool,
+        selections: PropTypes.array,
         setCurrentSelection: PropTypes.func.isRequired,
         removeCurrentSelection: PropTypes.func.isRequired,
         closeCommentArea: PropTypes.func.isRequired
@@ -22,7 +23,8 @@ class TextArea extends Component {
 
         this.setCurrentSelection = this.setCurrentSelection.bind(this);
         this.hasSelection = this.hasSelection.bind(this);
-        this.getNewElements = this.getNewElements.bind(this);
+        this.getnestedElementsDetailsDetails = this.getnestedElementsDetailsDetails.bind(this);
+        this.getElementsDetails = this.getElementsDetails.bind(this);
     }
 
     componentDidMount() {
@@ -94,131 +96,250 @@ class TextArea extends Component {
     }
 
     hasSelection(textStartsAt, textEndsAt) {
-        const {from, to} = this.props.currentSelection;
+        const {selections, currentSelection} = this.props;
 
-        return (from <= textStartsAt && textStartsAt < to) ||
-            (textStartsAt <= from && from <= textEndsAt) ||
-            (textStartsAt <= to && to <= textEndsAt);
-    }
-
-    getNewElements(children, keyIdentifier, textStartsAt, textEndsAt, shiftedIndex) {
-        const {from, to} = this.props.currentSelection;
-
-        let newElements = [];
-
-        const startingSelectionIndex = (from <= textStartsAt ? textStartsAt : from) - shiftedIndex;
-        const endingSelectionIndex = (to <= textEndsAt ? to : textEndsAt) - shiftedIndex + 1;
-
-        const startingText = children.substring(0, startingSelectionIndex);
-        const selectedText = children.substring(startingSelectionIndex, endingSelectionIndex);
-        const endingText = children.substring(endingSelectionIndex);
-
-        newElements.push(React.createElement('span', {
-            key: `starting-text-${keyIdentifier}`
-        }, startingText));
-        newElements.push(React.createElement('span', {
-            key: `selected-text-${keyIdentifier}`,
-            className: styles['selected-text']
-        }, selectedText));
-        newElements.push(React.createElement('span', {
-            key: `ending-text-${keyIdentifier}`
-        }, endingText));
-
-        return newElements;
-    }
-
-    getComputedText() {
-        const {currentSelection} = this.props;
+        let totalSelections = [...selections];
 
         if (currentSelection) {
-            let html = [];
-            let shiftedIndex = 0;
-
-            this.props.children.forEach((children, index) => {
-                if (typeof children === 'string') {
-                    const textStartsAt = shiftedIndex;
-                    const textEndsAt = shiftedIndex + children.length - 1;
-
-                    if (this.hasSelection(textStartsAt, textEndsAt)) {
-                        const newElements = this.getNewElements(children, index, textStartsAt, textEndsAt, shiftedIndex);
-                        html = html.concat(newElements);
-                    } else {
-                        html.push(React.createElement('span', {
-                            key: `unselected-text-${index}`
-                        }, children));
-                    }
-
-                    shiftedIndex += children.length;
-                }
-
-                if (typeof children === 'object') {
-                    if (Array.isArray(children)) {
-                        children.forEach((children, index) => {
-                            if (typeof children === 'string') {
-                                if (children.length) {
-                                    const textStartsAt = shiftedIndex;
-                                    const textEndsAt = shiftedIndex + children.length - 1;
-
-                                    if (this.hasSelection(textStartsAt, textEndsAt)) {
-                                        const newElements = this.getNewElements(children, `paragraph-child-${index}`, textStartsAt, textEndsAt, shiftedIndex);
-                                        html = html.concat(newElements);
-                                    } else {
-                                        html.push(React.createElement('span', {
-                                            key: `paragraph-child-unselected-text-${index}`
-                                        }, children));
-                                    }
-
-                                    shiftedIndex += children.length;
-                                }
-                            } else {
-                                html.push(React.createElement(children.type, {
-                                    key: `paragraph-child-br-${index}`
-                                }, children.props.children));
-                            }
-                        });
-                    } else {
-                        const textStartsAt = shiftedIndex;
-                        const textEndsAt = shiftedIndex + children.props.children.length - 1;
-
-                        if (this.hasSelection(textStartsAt, textEndsAt)) {
-                            const newElements = this.getNewElements(children.props.children, index, textStartsAt, textEndsAt, shiftedIndex);
-                            html.push(React.createElement(children.type, {
-                                key: index
-                            }, newElements));
-                        } else {
-                            html.push(React.createElement(children.type, {
-                                key: `unselected-text-${index}`
-                            }, children.props.children));
-                        }
-
-                        shiftedIndex += children.props.children.length;
-                    }
-                }
-            });
-
-            return html;
+            totalSelections.push(currentSelection);
         }
 
-        return this.props.children;
+        let status = false;
+
+        totalSelections.forEach(selection => {
+            const {from, to} = selection;
+
+            if ((from <= textStartsAt && textStartsAt < to) ||
+                (textStartsAt <= from && from <= textEndsAt) ||
+                (textStartsAt <= to && to <= textEndsAt)) {
+                status = true;
+            }
+        });
+
+        return status;
+    }
+
+    getnestedElementsDetailsDetails(children, keyIdentifier, textStartsAt, textEndsAt, shiftedIndex) {
+        const {selections, currentSelection} = this.props;
+
+        let totalSelections = [...selections];
+
+        if (currentSelection) {
+            totalSelections.push(currentSelection);
+        }
+
+        totalSelections.sort((sel1, sel2) => {
+            return sel1.from > sel2.from;
+        });
+
+        let nestedElementsDetails = [];
+        let maxTo = 0;
+
+        console.log('children ', children);
+
+        totalSelections.forEach((selection, index) => {
+            const {from, to} = selection;
+
+            console.log('from: ' + from + ' | to: ' + to + ' | maxTo: ' + maxTo + ' | textStartAt: ' + textStartsAt + ' | textEndsAt: ' + textEndsAt);
+
+            if (from > maxTo) {
+                // Text between [maxTo : from] is NOT selected.
+                let startingSelectionIndex = (maxTo <= textStartsAt ? textStartsAt : maxTo) - shiftedIndex;
+                /*if (index > 0) {
+                    startingSelectionIndex += 1;
+                }*/
+
+                let endingSelectionIndex = (from <= textEndsAt ? from : textEndsAt) - shiftedIndex;
+
+                const unSelectedText = children.substring(startingSelectionIndex, endingSelectionIndex);
+
+                console.log('1 unSelectedText', unSelectedText);
+
+                nestedElementsDetails.push({
+                    type: 'span',
+                    text: unSelectedText
+                });
+
+                startingSelectionIndex = (from <= textStartsAt ? textStartsAt : from) - shiftedIndex;
+                endingSelectionIndex = (to <= textEndsAt ? to : textEndsAt) - shiftedIndex + 1;
+                const selectedText = children.substring(startingSelectionIndex, endingSelectionIndex);
+
+                console.log('1 selectedText', selectedText);
+
+                nestedElementsDetails.push({
+                    type: 'span',
+                    props: {
+                        className: styles['selected-text']
+                    },
+                    text: selectedText
+                });
+            } else if (from === maxTo) {
+                // Text between [from + 1 : to] is selected.
+                const startingSelectionIndex = (from <= textStartsAt ? textStartsAt : from) - shiftedIndex;
+                const endingSelectionIndex = (to <= textEndsAt ? to : textEndsAt) - shiftedIndex + 1;
+                const selectedText = children.substring(startingSelectionIndex, endingSelectionIndex);
+
+                console.log('2 selectedText ', selectedText);
+
+                nestedElementsDetails.push({
+                    type: 'span',
+                    props: {
+                        className: styles['selected-text']
+                    },
+                    text: selectedText
+                });
+            } else {
+                /** TODO: Work on this case. Is not working! */
+
+                if (to > maxTo) {
+                    // Text between [maxTo: to] is selected.
+                    const startingSelectionIndex = (maxTo <= textStartsAt ? textStartsAt : maxTo) - shiftedIndex + 1;
+                    const endingSelectionIndex = (to <= textEndsAt ? to : textEndsAt) - shiftedIndex + 1;
+
+                    const selectedText = children.substring(startingSelectionIndex, endingSelectionIndex);
+
+                    console.log('3 selectedText', selectedText);
+
+                    nestedElementsDetails.push({
+                        type: 'span',
+                        props: {
+                            className: styles['selected-text']
+                        },
+                        text: selectedText
+                    });
+                }
+            }
+
+            // Setting the maximum TO index.
+            if (to > maxTo) {
+                maxTo = to;
+            }
+
+            // Text between [maxTo : ] is not selected.
+            if (totalSelections.length - 1 === index) {
+                const startingSelectionIndex = (maxTo <= textStartsAt ? textStartsAt : maxTo) - shiftedIndex + 1;
+                const unSelectedText = children.substring(startingSelectionIndex);
+
+                console.log('Last unSelectedText', unSelectedText);
+
+                nestedElementsDetails.push({
+                    type: 'span',
+                    text: unSelectedText
+                });
+            }
+        });
+
+        return nestedElementsDetails;
+    }
+
+    getElementsDetails() {
+        const {currentSelection, selections} = this.props;
+
+        /*if (!currentSelection && !selections.length) {
+            return this.props.children;
+        }*/
+
+        let elementsDetails = [];
+        let shiftedIndex = 0;
+        const keyIdentifier = Date.now();
+
+        this.props.children.forEach((children) => {
+            if (typeof children === 'string') {
+                const textStartsAt = shiftedIndex;
+                const textEndsAt = shiftedIndex + children.length - 1;
+
+                if (this.hasSelection(textStartsAt, textEndsAt)) {
+                    const newElements = this.getnestedElementsDetailsDetails(children, keyIdentifier, textStartsAt, textEndsAt, shiftedIndex);
+                    elementsDetails = elementsDetails.concat(newElements);
+                } else {
+                    elementsDetails.push({
+                        type: 'span',
+                        text: children
+                    });
+                }
+
+                shiftedIndex += children.length;
+            }
+
+            if (typeof children === 'object') {
+                if (Array.isArray(children)) {
+                    children.forEach((children, index) => {
+                        if (typeof children === 'string') {
+                            if (children.length) {
+                                const textStartsAt = shiftedIndex;
+                                const textEndsAt = shiftedIndex + children.length - 1;
+
+                                if (this.hasSelection(textStartsAt, textEndsAt)) {
+                                    const newElements = this.getnestedElementsDetailsDetails(children, `paragraph-child-${keyIdentifier}-${index}`, textStartsAt, textEndsAt, shiftedIndex);
+                                    elementsDetails = elementsDetails.concat(newElements);
+                                } else {
+                                    elementsDetails.push({
+                                        type: 'span',
+                                        text: children
+                                    });
+                                }
+
+                                shiftedIndex += children.length;
+                            }
+                        } else {
+                            elementsDetails.push({
+                                type: children.type,
+                                text: children.props.children
+                            });
+                        }
+                    });
+                } else {
+                    const textStartsAt = shiftedIndex;
+                    const textEndsAt = shiftedIndex + children.props.children.length - 1;
+
+                    if (this.hasSelection(textStartsAt, textEndsAt)) {
+                        const newElements = this.getNewElements(children.props.children, keyIdentifier, textStartsAt, textEndsAt, shiftedIndex);
+                        elementsDetails.push({
+                            type: children.type,
+                            text: newElements
+                        });
+                    } else {
+                        elementsDetails.push({
+                            type: children.type,
+                            text: children.props.children
+                        });
+                    }
+
+                    shiftedIndex += children.props.children.length;
+                }
+            }
+        });
+
+        return elementsDetails;
     }
 
     render() {
-        const text = this.getComputedText();
+        const elementsDetails = this.getElementsDetails();
+
+        console.log(elementsDetails);
 
         return (
             <div className={styles['text-area-container']} ref={(div) => this.div = div}>
-                {text}
+                {
+                    elementsDetails.map((elementDetails, index) => {
+                        return React.createElement(elementDetails.type, {
+                            key: index,
+                            ...elementDetails.props
+                        }, elementDetails.text);
+                    })
+                }
             </div>
         );
     }
 }
 
 const mapStateToProps = (state) => {
-    const {currentSelection, viewCommentBox} = state;
+    const {currentSelection, viewCommentBox, selections} = state;
 
     return {
         currentSelection,
-        viewCommentBox
+        viewCommentBox,
+        selections
     };
 };
 

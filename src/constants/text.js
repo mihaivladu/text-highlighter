@@ -1,3 +1,18 @@
-const TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras pharetra nec diam a tincidunt. Mauris vehicula ultrices augue et malesuada. Etiam ultrices urna sem, sit amet congue mi bibendum a. Aenean ut lacinia turpis, sit amet tincidunt ipsum. Integer in faucibus urna. Vestibulum lacinia viverra eros tristique tempor. Vestibulum in lorem sed erat hendrerit mollis. Nullam porta, enim ut rhoncus maximus, nisl justo malesuada sem, nec tincidunt neque enim nec massa. Nulla pellentesque justo erat, a iaculis augue commodo eu. Vestibulum sagittis magna ut dignissim venenatis. Ut aliquam libero at lectus accumsan iaculis at non dolor. Maecenas sollicitudin purus eget nisl iaculis condimentum. Suspendisse sit amet velit interdum, dapibus nibh porta, commodo mi. Aliquam magna orci, maximus consequat aliquet at, ultrices maximus velit. Duis ultricies consectetur diam at sollicitudin. Aenean accumsan dui ut blandit egestas.\n\nDonec ac ante at ante accumsan placerat lacinia quis elit. Etiam viverra magna magna, a venenatis diam maximus a. Ut consequat nibh eu enim pellentesque scelerisque. Etiam congue turpis nec sem blandit, vitae vulputate sapien rhoncus. In ullamcorper lacus nisi, ac interdum metus luctus sed. Curabitur aliquam risus auctor aliquam auctor. Aliquam volutpat mollis mauris. Integer eget purus scelerisque, ornare risus vel, volutpat odio. Curabitur placerat sem dui, a varius nisl facilisis eu. Vivamus tempor nisl sem, id venenatis dui posuere eu. Pellentesque vitae arcu tellus. Donec aliquet sagittis varius. Sed tincidunt nibh finibus, suscipit justo et, pretium turpis. Duis non ultrices augue. Nam posuere gravida interdum. Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
+const TEXT = 'Somnoroase păsărele\n' +
+    'Pe la cuiburi se adună,\n' +
+    'Se ascund în rămurele,\n' +
+    'Noapte bună!\n\n' +
+    'Doar izvoarele suspină,\n' +
+    'Pe când codrul negru tace;\n' +
+    'Dorm şi florile-n grădină,\n' +
+    'Dormi în pace!\n\n' +
+    'Trece lebăda pe ape\n' +
+    'Între trestii să se culce,\n' +
+    'Fie-ţi îngerii aproape,\n' +
+    'Somnul dulce!\n\n' +
+    'Peste-a nopţii feerie\n' +
+    'Se ridică mândra lună,\n' +
+    'Totu-i vis şi armonie,\n' +
+    'Noapte bună!';
 
 export default TEXT;

@@ -50,18 +50,6 @@ const data = (state = {
     }
 
     if (action.type === SUBMIT_COMMENT) {
-        console.log({
-            currentSelection: null,
-            viewCommentBox: false,
-            selections: [
-                ...state.selections,
-                {
-                    ...state.currentSelection,
-                    comment: action.comment
-                }
-            ]
-        });
-
         return {
             currentSelection: null,
             viewCommentBox: false,
