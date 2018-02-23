@@ -12,7 +12,6 @@ const App = () => (
     <div className={styles['main-container']}>
         <div className={styles['text-container']}>
             <SelectionHandler>
-                Simple text
                 <h3>Some title</h3>
                 {nl2br(TEXT)}
             </SelectionHandler>

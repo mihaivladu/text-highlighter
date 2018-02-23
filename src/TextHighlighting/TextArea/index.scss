@@ -1,0 +1,17 @@
+$selectionColor: yellow;
+
+.text-area-container {
+  .selected-text {
+    background-color: $selectionColor;
+  }
+
+  &::selection,
+  *::selection {
+    background-color: $selectionColor;
+  }
+
+  &::-moz-selection,
+  *::-moz-selection {
+    background-color: $selectionColor;
+  }
+}
