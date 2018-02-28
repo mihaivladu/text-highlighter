@@ -5,11 +5,12 @@ import { connect } from 'react-redux';
 import TextArea from './TextArea';
 import CommentHandler from './CommentHandler';
 import CommentArea from './CommentArea';
+import Comments from './Comments';
 
 import styles from './index.scss';
 
 const TextHighlighting = (props) => {
-    const {currentSelection, viewCommentBox, children} = props;
+    const {currentSelection, viewCommentBox, selections, textAreaRef, children} = props;
 
     // Reduce the top by 40 because of the padding and margins above the div.
     const commentHandlerPosition = {
@@ -37,6 +38,12 @@ const TextHighlighting = (props) => {
                 <CommentArea position={commentAreaPosition} /> ||
                 null
             }
+
+            {
+                textAreaRef && !currentSelection && selections.length &&
+                <Comments textAreaRef={textAreaRef} /> ||
+                null
+            }
         </div>
     );
 };
@@ -45,15 +52,19 @@ TextHighlighting.displayName = 'TextHighlighting';
 
 TextHighlighting.props = {
     currentSelection: PropTypes.object,
-    viewCommentBox: PropTypes.bool
+    viewCommentBox: PropTypes.bool,
+    selections: PropTypes.array,
+    textAreaRef: PropTypes.object
 };
 
 const mapStateToProps = (state) => {
-    const {currentSelection, viewCommentBox} = state;
+    const {currentSelection, viewCommentBox, selections, textAreaRef} = state;
 
     return {
         currentSelection,
-        viewCommentBox
+        viewCommentBox,
+        selections,
+        textAreaRef
     };
 };
 

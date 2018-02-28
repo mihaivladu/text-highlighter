@@ -2,7 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { setCurrentSelection, removeCurrentSelection, closeCommentArea } from '../../actions';
+import {
+    setCurrentSelection,
+    removeCurrentSelection,
+    closeCommentArea,
+    setTextAreaRef
+} from '../../actions';
 
 import styles from './index.scss';
 
@@ -15,7 +20,8 @@ class TextArea extends Component {
         selections: PropTypes.array,
         setCurrentSelection: PropTypes.func.isRequired,
         removeCurrentSelection: PropTypes.func.isRequired,
-        closeCommentArea: PropTypes.func.isRequired
+        closeCommentArea: PropTypes.func.isRequired,
+        setTextAreaRef: PropTypes.func.isRequired
     };
 
     constructor(props) {
@@ -23,7 +29,7 @@ class TextArea extends Component {
 
         this.setCurrentSelection = this.setCurrentSelection.bind(this);
         this.hasSelection = this.hasSelection.bind(this);
-        this.getnestedElementsDetailsDetails = this.getnestedElementsDetailsDetails.bind(this);
+        this.getNestedElementsDetailsDetails = this.getNestedElementsDetailsDetails.bind(this);
         this.getElementsDetails = this.getElementsDetails.bind(this);
     }
 
@@ -40,6 +46,10 @@ class TextArea extends Component {
                 }
             }
         };
+
+        this.props.setTextAreaRef({
+            textAreaRef: this.div
+        });
     }
 
     setCurrentSelection() {
@@ -61,6 +71,9 @@ class TextArea extends Component {
                 const precedingRange = document.createRange();
                 precedingRange.setStartBefore(this.div.firstChild);
                 precedingRange.setEnd(range.startContainer, range.startOffset);
+                /*console.log('precedingRange', precedingRange);
+                console.log('toString', precedingRange.toString());
+                console.log('startOffset: ' + range.startOffset);*/
 
                 // Get preceding text.
                 const textPrecedingSelection = precedingRange.toString();
@@ -119,7 +132,7 @@ class TextArea extends Component {
         return status;
     }
 
-    getnestedElementsDetailsDetails(children, keyIdentifier, textStartsAt, textEndsAt, shiftedIndex) {
+    getNestedElementsDetailsDetails(children, keyIdentifier, textStartsAt, textEndsAt, shiftedIndex) {
         const {selections, currentSelection} = this.props;
 
         let totalSelections = [...selections];
@@ -135,56 +148,76 @@ class TextArea extends Component {
         let nestedElementsDetails = [];
         let maxTo = 0;
 
-        console.log('children ', children);
+        /*console.log('%c---  new element  -----------------------------------------', 'color: #ff0000');
+        console.log('%c' + children.substring(0, children.length > 50 ? 50 : children.length) + (children.length > 50 ? '...' : ''), 'color: #aaa');
+        console.log('textStartsAt: ' + textStartsAt + ' | textEndsAt: ' + textEndsAt + ' | shifted: ' + shiftedIndex + '\n\n');*/
 
         totalSelections.forEach((selection, index) => {
             const {from, to} = selection;
 
-            console.log('from: ' + from + ' | to: ' + to + ' | maxTo: ' + maxTo + ' | textStartAt: ' + textStartsAt + ' | textEndsAt: ' + textEndsAt);
+            /*console.log('%c--- #' + index + ' selection ---', 'color: #0000ff');
+            console.log('from : ' + from + ' | to: ' + to + ' | maxTo: ' + maxTo + '\n\n');*/
 
             if (from > maxTo) {
                 // Text between [maxTo : from] is NOT selected.
-                let startingSelectionIndex = (maxTo <= textStartsAt ? textStartsAt : maxTo) - shiftedIndex;
-                /*if (index > 0) {
-                    startingSelectionIndex += 1;
-                }*/
+                const max = maxTo <= textStartsAt ? textStartsAt : (maxTo + 1);
+                let startingSelectionIndex = max - shiftedIndex;
 
                 let endingSelectionIndex = (from <= textEndsAt ? from : textEndsAt) - shiftedIndex;
 
-                const unSelectedText = children.substring(startingSelectionIndex, endingSelectionIndex);
+                /*console.log('%cUnselected text indexes:', 'color: #16822D');
+                console.log('startingIndex: ' + startingSelectionIndex + ' | endingIndex: ' + endingSelectionIndex + '\n\n');*/
 
-                console.log('1 unSelectedText', unSelectedText);
+                if (endingSelectionIndex >= startingSelectionIndex) {
+                    const unSelectedText = children.substring(startingSelectionIndex, endingSelectionIndex);
 
-                nestedElementsDetails.push({
-                    type: 'span',
-                    text: unSelectedText
-                });
+                    /*console.log('%cUnselected text:', 'color: #16822D');
+                    console.log(unSelectedText + '\n\n');*/
+
+                    nestedElementsDetails.push({
+                        type: 'span',
+                        text: unSelectedText
+                    });
+                }
 
                 startingSelectionIndex = (from <= textStartsAt ? textStartsAt : from) - shiftedIndex;
                 endingSelectionIndex = (to <= textEndsAt ? to : textEndsAt) - shiftedIndex + 1;
-                const selectedText = children.substring(startingSelectionIndex, endingSelectionIndex);
 
-                console.log('1 selectedText', selectedText);
+                /*console.log('%cSelected text indexes:', 'color: #16822D');
+                console.log('startingIndex: ' + startingSelectionIndex + ' | endingIndex: ' + endingSelectionIndex + '\n\n');*/
 
-                nestedElementsDetails.push({
-                    type: 'span',
-                    props: {
-                        className: styles['selected-text']
-                    },
-                    text: selectedText
-                });
+                if (endingSelectionIndex > startingSelectionIndex) {
+                    const selectedText = children.substring(startingSelectionIndex, endingSelectionIndex);
+
+                    /*console.log('%cSelected text:', 'color: #16822D');
+                    console.log(selectedText + '\n\n');*/
+
+                    nestedElementsDetails.push({
+                        type: 'span',
+                        props: {
+                            className: styles['selected-text'],
+                            id: selection.id
+                        },
+                        text: selectedText
+                    });
+                }
             } else if (from === maxTo) {
                 // Text between [from + 1 : to] is selected.
                 const startingSelectionIndex = (from <= textStartsAt ? textStartsAt : from) - shiftedIndex;
                 const endingSelectionIndex = (to <= textEndsAt ? to : textEndsAt) - shiftedIndex + 1;
                 const selectedText = children.substring(startingSelectionIndex, endingSelectionIndex);
 
-                console.log('2 selectedText ', selectedText);
+                /*console.log('%cSelected text indexes:', 'color: #16822D');
+                console.log('startingIndex: ' + startingSelectionIndex + ' | endingIndex: ' + endingSelectionIndex + '\n\n');*/
+
+                /*console.log('%cSelected text:', 'color: #16822D');
+                console.log(selectedText + '\n\n');*/
 
                 nestedElementsDetails.push({
                     type: 'span',
                     props: {
-                        className: styles['selected-text']
+                        className: styles['selected-text'],
+                        id: selection.id
                     },
                     text: selectedText
                 });
@@ -198,12 +231,13 @@ class TextArea extends Component {
 
                     const selectedText = children.substring(startingSelectionIndex, endingSelectionIndex);
 
-                    console.log('3 selectedText', selectedText);
+                    /*console.log('to > maxTo (sel): ' + selectedText);*/
 
                     nestedElementsDetails.push({
                         type: 'span',
                         props: {
-                            className: styles['selected-text']
+                            className: styles['selected-text'],
+                            id: selection.id
                         },
                         text: selectedText
                     });
@@ -220,7 +254,7 @@ class TextArea extends Component {
                 const startingSelectionIndex = (maxTo <= textStartsAt ? textStartsAt : maxTo) - shiftedIndex + 1;
                 const unSelectedText = children.substring(startingSelectionIndex);
 
-                console.log('Last unSelectedText', unSelectedText);
+                /*console.log('remaining: ', unSelectedText);*/
 
                 nestedElementsDetails.push({
                     type: 'span',
@@ -229,16 +263,12 @@ class TextArea extends Component {
             }
         });
 
+        /*console.log('\n');*/
+
         return nestedElementsDetails;
     }
 
     getElementsDetails() {
-        const {currentSelection, selections} = this.props;
-
-        /*if (!currentSelection && !selections.length) {
-            return this.props.children;
-        }*/
-
         let elementsDetails = [];
         let shiftedIndex = 0;
         const keyIdentifier = Date.now();
@@ -246,10 +276,10 @@ class TextArea extends Component {
         this.props.children.forEach((children) => {
             if (typeof children === 'string') {
                 const textStartsAt = shiftedIndex;
-                const textEndsAt = shiftedIndex + children.length - 1;
+                const textEndsAt = shiftedIndex + children.length;
 
                 if (this.hasSelection(textStartsAt, textEndsAt)) {
-                    const newElements = this.getnestedElementsDetailsDetails(children, keyIdentifier, textStartsAt, textEndsAt, shiftedIndex);
+                    const newElements = this.getNestedElementsDetailsDetails(children, keyIdentifier, textStartsAt, textEndsAt, shiftedIndex);
                     elementsDetails = elementsDetails.concat(newElements);
                 } else {
                     elementsDetails.push({
@@ -259,54 +289,50 @@ class TextArea extends Component {
                 }
 
                 shiftedIndex += children.length;
-            }
+            } else if (Array.isArray(children)) {
+                children.forEach((children, index) => {
+                    if (typeof children === 'string') {
+                        if (children.length) {
+                            const textStartsAt = shiftedIndex;
+                            const textEndsAt = shiftedIndex + children.length;
 
-            if (typeof children === 'object') {
-                if (Array.isArray(children)) {
-                    children.forEach((children, index) => {
-                        if (typeof children === 'string') {
-                            if (children.length) {
-                                const textStartsAt = shiftedIndex;
-                                const textEndsAt = shiftedIndex + children.length - 1;
-
-                                if (this.hasSelection(textStartsAt, textEndsAt)) {
-                                    const newElements = this.getnestedElementsDetailsDetails(children, `paragraph-child-${keyIdentifier}-${index}`, textStartsAt, textEndsAt, shiftedIndex);
-                                    elementsDetails = elementsDetails.concat(newElements);
-                                } else {
-                                    elementsDetails.push({
-                                        type: 'span',
-                                        text: children
-                                    });
-                                }
-
-                                shiftedIndex += children.length;
+                            if (this.hasSelection(textStartsAt, textEndsAt)) {
+                                const newElements = this.getNestedElementsDetailsDetails(children, `paragraph-child-${keyIdentifier}-${index}`, textStartsAt, textEndsAt, shiftedIndex);
+                                elementsDetails = elementsDetails.concat(newElements);
+                            } else {
+                                elementsDetails.push({
+                                    type: 'span',
+                                    text: children
+                                });
                             }
-                        } else {
-                            elementsDetails.push({
-                                type: children.type,
-                                text: children.props.children
-                            });
-                        }
-                    });
-                } else {
-                    const textStartsAt = shiftedIndex;
-                    const textEndsAt = shiftedIndex + children.props.children.length - 1;
 
-                    if (this.hasSelection(textStartsAt, textEndsAt)) {
-                        const newElements = this.getNewElements(children.props.children, keyIdentifier, textStartsAt, textEndsAt, shiftedIndex);
-                        elementsDetails.push({
-                            type: children.type,
-                            text: newElements
-                        });
+                            shiftedIndex += children.length;
+                        }
                     } else {
                         elementsDetails.push({
                             type: children.type,
                             text: children.props.children
                         });
                     }
+                });
+            } else {
+                const textStartsAt = shiftedIndex;
+                const textEndsAt = shiftedIndex + children.props.children.length;
 
-                    shiftedIndex += children.props.children.length;
+                if (this.hasSelection(textStartsAt, textEndsAt)) {
+                    const newElements = this.getNestedElementsDetailsDetails(children.props.children, keyIdentifier, textStartsAt, textEndsAt, shiftedIndex);
+                    elementsDetails.push({
+                        type: children.type,
+                        text: newElements
+                    });
+                } else {
+                    elementsDetails.push({
+                        type: children.type,
+                        text: children.props.children
+                    });
                 }
+
+                shiftedIndex += children.props.children.length;
             }
         });
 
@@ -316,16 +342,28 @@ class TextArea extends Component {
     render() {
         const elementsDetails = this.getElementsDetails();
 
-        console.log(elementsDetails);
-
         return (
             <div className={styles['text-area-container']} ref={(div) => this.div = div}>
                 {
                     elementsDetails.map((elementDetails, index) => {
-                        return React.createElement(elementDetails.type, {
+                        const {type, props, text} = elementDetails;
+                        let nestedElements = [];
+
+                        if (Array.isArray(text)) {
+                            nestedElements = text.map((element, index) => {
+                                const {type, props, text} = element;
+
+                                return React.createElement(type, {
+                                    key: `2nd-level-${index}`,
+                                    ...props
+                                }, text);
+                            });
+                        }
+
+                        return React.createElement(type, {
                             key: index,
-                            ...elementDetails.props
-                        }, elementDetails.text);
+                            ...props
+                        }, nestedElements.length ? nestedElements : text);
                     })
                 }
             </div>
@@ -346,5 +384,6 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
     setCurrentSelection,
     removeCurrentSelection,
-    closeCommentArea
+    closeCommentArea,
+    setTextAreaRef
 })(TextArea);

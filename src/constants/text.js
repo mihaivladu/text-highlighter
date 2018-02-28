@@ -1,18 +1,9 @@
-const TEXT = 'Somnoroase păsărele\n' +
-    'Pe la cuiburi se adună,\n' +
-    'Se ascund în rămurele,\n' +
-    'Noapte bună!\n\n' +
-    'Doar izvoarele suspină,\n' +
-    'Pe când codrul negru tace;\n' +
-    'Dorm şi florile-n grădină,\n' +
-    'Dormi în pace!\n\n' +
-    'Trece lebăda pe ape\n' +
-    'Între trestii să se culce,\n' +
-    'Fie-ţi îngerii aproape,\n' +
-    'Somnul dulce!\n\n' +
-    'Peste-a nopţii feerie\n' +
-    'Se ridică mândra lună,\n' +
-    'Totu-i vis şi armonie,\n' +
-    'Noapte bună!';
+const TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas placerat in ante ac ornare. Donec sit amet condimentum ligula. Donec varius orci eget suscipit ornare. Nulla non ullamcorper neque. Mauris et nisl a libero elementum ultricies at id dolor. Donec iaculis, augue at venenatis dictum, dolor nisi sollicitudin mi, non aliquam sem metus quis massa. Mauris non orci vitae sapien cursus placerat sed at lectus. In tempus ipsum sit amet odio rutrum dictum. Nunc justo mauris, laoreet ultrices lacus id, condimentum sagittis odio. Pellentesque aliquam, nibh quis euismod porttitor, metus leo facilisis tellus, et tempor justo turpis non dolor. Maecenas turpis metus, porttitor in enim eget, vulputate efficitur quam. Curabitur vitae risus ut metus molestie porttitor ut non arcu.\n" +
+    "\n" +
+    "Quisque tincidunt lorem at turpis egestas, ut lobortis quam lacinia. Nullam mattis convallis sem, eget lobortis turpis varius nec. Aliquam eu sapien placerat, vehicula lacus aliquam, luctus nisl. Curabitur elementum ornare volutpat. Nam eleifend lacus justo, vulputate imperdiet felis euismod sed. Cras vitae tellus vulputate, ullamcorper ipsum et, vehicula tortor. Aenean vel nunc a mauris tempus mattis sit amet vehicula sapien. Maecenas est lectus, porta ut enim nec, laoreet maximus lorem.\n" +
+    "\n" +
+    "Maecenas vel rutrum sem. Sed leo massa, pretium sit amet tortor at, rutrum consectetur ante. Vestibulum interdum, mauris eget lacinia laoreet, purus metus fermentum nisl, a elementum nisi arcu et ex. Nulla vel dui arcu. Maecenas ultrices porta pretium. Sed ac mattis mauris. Nam ullamcorper blandit velit, vitae vulputate leo suscipit ut.\n" +
+    "\n" +
+    "Duis eget massa mollis, viverra mauris eget, interdum tellus. Aliquam imperdiet egestas nulla, in laoreet lorem gravida id. Morbi quis condimentum ante, vel elementum ex. Nam iaculis orci a mauris blandit, ac viverra dolor efficitur. Suspendisse a dui tempus, egestas nisl sed, aliquam purus. Curabitur ligula velit, consectetur sed dictum ac, facilisis nec nulla. Interdum et malesuada fames ac ante ipsum primis in faucibus.";
 
 export default TEXT;

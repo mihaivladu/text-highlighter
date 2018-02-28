@@ -1,13 +1,16 @@
-import {} from '../actions/types';
 import {
     SET_CURRENT_SELECTION,
     REMOVE_CURRENT_SELECTION,
     OPEN_COMMENT_AREA,
     CLOSE_COMMENT_AREA,
-    SUBMIT_COMMENT
+    SUBMIT_COMMENT,
+    SET_TEXT_AREA_REF
 } from '../actions/types';
 
+let id = 0;
+
 const data = (state = {
+    textAreaRef: null,
     currentSelection: null,
     viewCommentBox: false,
     selections: []
@@ -18,6 +21,7 @@ const data = (state = {
         return {
             ...state,
             currentSelection: {
+                id: 'add_new',
                 from,
                 to,
                 text,
@@ -50,16 +54,27 @@ const data = (state = {
     }
 
     if (action.type === SUBMIT_COMMENT) {
+        console.log('set id');
+
         return {
+            ...state,
             currentSelection: null,
             viewCommentBox: false,
             selections: [
                 ...state.selections,
                 {
                     ...state.currentSelection,
+                    id: ++id,
                     comment: action.comment
                 }
             ]
+        };
+    }
+
+    if (action.type === SET_TEXT_AREA_REF) {
+        return {
+            ...state,
+            textAreaRef: action.textAreaRef
         };
     }
 
