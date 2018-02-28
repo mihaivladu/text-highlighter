@@ -41,7 +41,7 @@ const TextHighlighting = (props) => {
 
             {
                 textAreaRef && !currentSelection && selections.length &&
-                <Comments textAreaRef={textAreaRef} /> ||
+                <Comments /> ||
                 null
             }
         </div>

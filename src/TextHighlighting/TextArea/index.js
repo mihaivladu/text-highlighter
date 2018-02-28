@@ -222,8 +222,6 @@ class TextArea extends Component {
                     text: selectedText
                 });
             } else {
-                /** TODO: Work on this case. Is not working! */
-
                 if (to > maxTo) {
                     // Text between [maxTo: to] is selected.
                     const startingSelectionIndex = (maxTo <= textStartsAt ? textStartsAt : maxTo) - shiftedIndex + 1;

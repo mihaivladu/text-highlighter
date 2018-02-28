@@ -21,36 +21,34 @@ class Comments extends Component {
 
     getElementsDetails() {
         const {textAreaRef, selections} = this.props;
-
-        /*console.log({...textAreaRef});*/
-
         const textAreaChildNodes = textAreaRef.childNodes;
-        const originalText = textAreaRef.innerText.replace(/[\n\r]/g, '');
+        const sortedSelections = [...selections];
+
+        sortedSelections.sort((sel1, sel2) => {
+            return sel1.from > sel2.from;
+        });
+
         let elementsDetails = [];
 
         textAreaChildNodes.forEach(textAreaChildNode => {
             const childNodesLength = textAreaChildNode.childNodes.length;
             const hasSelectedClass = textAreaChildNode.className.indexOf(textAreaStyles['selected-text']) >= 0;
 
-            selections.forEach(selection => {
+            console.log('%c--- element ----------------------', 'color: #ff0000');
+            console.log(textAreaChildNode);
+
+            sortedSelections.forEach((selection, index) => {
                 const {id, from, to, text, comment} = selection;
 
                 if (hasSelectedClass) {
-                    const id = textAreaChildNode.id;
-                    console.log(textAreaRef);
-                    console.log(textAreaChildNode);
-                    console.log('ID = ' + id);
+                    console.log('%c--- selection ----------------------', 'color: #0000ff');
+                    console.log(selection);
+                    console.log('IDS: ' + selection.id + ' vs ' + textAreaChildNode.id);
 
+                    const id = textAreaChildNode.id;
                     const innerText = textAreaChildNode.innerText;
 
-                    /*console.log(from, to, text, comment);
-                    console.log(innerText);*/
-
                     if (innerText === text) {
-                        const auxSelectedText = originalText.substring(from, to + 1);
-                        /*console.log(auxSelectedText);
-                        console.log('');*/
-
                         const range = document.createRange();
                         range.setStart(textAreaChildNode, 0);
                         range.setEnd(textAreaChildNode, 1);
@@ -64,7 +62,9 @@ class Comments extends Component {
                         });
                     }
                 }
-            })
+            });
+
+            console.log('');
         });
 
         return elementsDetails;
@@ -92,9 +92,10 @@ class Comments extends Component {
 }
 
 const mapStateToProps = (state) => {
-    const {selections} = state;
+    const {textAreaRef, selections} = state;
 
     return {
+        textAreaRef,
         selections
     };
 };

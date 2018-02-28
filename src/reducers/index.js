@@ -54,8 +54,6 @@ const data = (state = {
     }
 
     if (action.type === SUBMIT_COMMENT) {
-        console.log('set id');
-
         return {
             ...state,
             currentSelection: null,
