@@ -20,14 +20,18 @@ class Comments extends Component {
     }
 
     getElementsDetails() {
-        const {textAreaRef, selections} = this.props;
-        const textAreaChildNodes = textAreaRef.childNodes;
+        console.log('stuff !?');
+        const {selections} = this.props;
+        const mainContainer = document.getElementsByClassName(textAreaStyles['text-area-container'])[0];
+        console.log(mainContainer);
+        const textAreaChildNodes = mainContainer.childNodes;
         const sortedSelections = [...selections];
 
         sortedSelections.sort((sel1, sel2) => {
             return sel1.from > sel2.from;
         });
 
+        let usedIds = [];
         let elementsDetails = [];
 
         textAreaChildNodes.forEach(textAreaChildNode => {
@@ -43,23 +47,51 @@ class Comments extends Component {
                 if (hasSelectedClass) {
                     console.log('%c--- selection ----------------------', 'color: #0000ff');
                     console.log(selection);
-                    console.log('IDS: ' + selection.id + ' vs ' + textAreaChildNode.id);
+                    console.log('GET BY ID', document.getElementById('add_new'));
+                    console.log('GET BY ID', document.getElementById('1'));
+                    console.log('%cIDS: ' + selection.id + ' vs ' + textAreaChildNode.id, 'color: #aaa');
+                    console.log('usedIds', usedIds, usedIds.indexOf(id));
 
                     const id = textAreaChildNode.id;
+                    console.log(selection.id, id);
                     const innerText = textAreaChildNode.innerText;
 
-                    if (innerText === text) {
-                        const range = document.createRange();
-                        range.setStart(textAreaChildNode, 0);
-                        range.setEnd(textAreaChildNode, 1);
+                    if (usedIds.indexOf(id) === -1) {
+                        if (id === 'add_new') {
+                            console.log('FOUND: ' + text);
 
-                        const rectangles = range.getClientRects();
-                        const top = rectangles[rectangles.length - 1].top;
+                            const range = document.createRange();
+                            range.setStart(textAreaChildNode, 0);
+                            range.setEnd(textAreaChildNode, 1);
 
-                        elementsDetails.push({
-                            comment,
-                            top: rectangles[rectangles.length - 1].top
-                        });
+                            const rectangles = range.getClientRects();
+                            const top = rectangles[rectangles.length - 1].top;
+
+                            elementsDetails.push({
+                                comment,
+                                top: rectangles[rectangles.length - 1].top
+                            });
+
+                            usedIds.push(id);
+                        } else {
+                            if (id === selection.id.toString()) {
+                                console.log('FOUND: ' + text);
+
+                                const range = document.createRange();
+                                range.setStart(textAreaChildNode, 0);
+                                range.setEnd(textAreaChildNode, 1);
+
+                                const rectangles = range.getClientRects();
+                                const top = rectangles[rectangles.length - 1].top;
+
+                                elementsDetails.push({
+                                    comment,
+                                    top: rectangles[rectangles.length - 1].top
+                                });
+
+                                usedIds.push(id);
+                            }
+                        }
                     }
                 }
             });
@@ -71,6 +103,8 @@ class Comments extends Component {
     }
 
     render() {
+        console.log('comments render');
+
         const elementsDetails = this.getElementsDetails();
 
         return (
