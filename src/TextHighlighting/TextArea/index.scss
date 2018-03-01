@@ -1,10 +1,6 @@
-$selectionColor: red;
+$selectionColor: #ff0000;
 
 .text-area-container {
-  .selected-text {
-    background-color: $selectionColor;
-  }
-
   &::selection,
   *::selection {
     background-color: $selectionColor;

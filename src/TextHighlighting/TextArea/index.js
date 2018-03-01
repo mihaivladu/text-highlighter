@@ -9,6 +9,8 @@ import {
     setTextAreaRef
 } from '../../actions';
 
+import SelectedText from '../SelectedText';
+
 import styles from './index.scss';
 
 class TextArea extends Component {
@@ -193,12 +195,11 @@ class TextArea extends Component {
                     console.log(selectedText + '\n\n');*/
 
                     nestedElementsDetails.push({
-                        type: 'span',
+                        type: SelectedText,
                         props: {
-                            className: styles['selected-text'],
-                            id: selection.id
-                        },
-                        text: selectedText
+                            id: selection.id,
+                            text: selectedText
+                        }
                     });
                 }
             } else if (from === maxTo) {
@@ -214,12 +215,11 @@ class TextArea extends Component {
                 console.log(selectedText + '\n\n');*/
 
                 nestedElementsDetails.push({
-                    type: 'span',
+                    type: SelectedText,
                     props: {
-                        className: styles['selected-text'],
-                        id: selection.id
-                    },
-                    text: selectedText
+                        id: selection.id,
+                        text: selectedText
+                    }
                 });
             } else {
                 if (to > maxTo) {
@@ -232,12 +232,11 @@ class TextArea extends Component {
                     /*console.log('to > maxTo (sel): ' + selectedText);*/
 
                     nestedElementsDetails.push({
-                        type: 'span',
+                        type: SelectedText,
                         props: {
-                            className: styles['selected-text'],
-                            id: selection.id
-                        },
-                        text: selectedText
+                            id: selection.id,
+                            text: selectedText
+                        }
                     });
                 }
             }
