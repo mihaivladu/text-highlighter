@@ -5,21 +5,21 @@ import { connect } from 'react-redux';
 import TextArea from './TextArea';
 import CommentHandler from './CommentHandler';
 import CommentArea from './CommentArea';
+import Comments from './Comments';
 
 import styles from './index.scss';
 
 const TextHighlighting = (props) => {
-    const {currentSelection, viewCommentBox, selections, textAreaRef, children} = props;
+    const {wasDataRendered, currentSelection, viewCommentBox, selections, children} = props;
 
-    // Reduce the top by 40 because of the padding and margins above the div.
     const commentHandlerPosition = {
-        top: `${currentSelection && currentSelection.rectangles[0].top - 40 || 0}px`,
-        right: '-30px'
+        top: `${currentSelection && currentSelection.rectangles[0].top || 0}`,
+        right: -30
     };
 
     const commentAreaPosition = {
-        top: `${currentSelection && currentSelection.rectangles[0].top - 40 || 0}px`,
-        right: '-262px'
+        top: `${currentSelection && currentSelection.rectangles[0].top || 0}`,
+        right: -262
     };
 
     return (
@@ -27,14 +27,20 @@ const TextHighlighting = (props) => {
             <TextArea>{children}</TextArea>
 
             {
-                currentSelection && !viewCommentBox &&
+                wasDataRendered && currentSelection && !viewCommentBox &&
                 <CommentHandler position={commentHandlerPosition} /> ||
                 null
             }
 
             {
-                viewCommentBox &&
+                wasDataRendered && viewCommentBox &&
                 <CommentArea position={commentAreaPosition} /> ||
+                null
+            }
+
+            {
+                wasDataRendered && !currentSelection && selections.length &&
+                <Comments /> ||
                 null
             }
         </div>
@@ -44,15 +50,17 @@ const TextHighlighting = (props) => {
 TextHighlighting.displayName = 'TextHighlighting';
 
 TextHighlighting.props = {
+    wasDataRendered: PropTypes.bool.isRequired,
     currentSelection: PropTypes.object,
     viewCommentBox: PropTypes.bool,
     selections: PropTypes.array
 };
 
 const mapStateToProps = (state) => {
-    const {currentSelection, viewCommentBox, selections} = state;
+    const {wasDataRendered, currentSelection, viewCommentBox, selections} = state;
 
     return {
+        wasDataRendered,
         currentSelection,
         viewCommentBox,
         selections

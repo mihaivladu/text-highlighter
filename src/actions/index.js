@@ -1,3 +1,3 @@
 export * from './currentSelection';
 export * from './commentArea';
-export * from './textAreaContainer';
+export * from './env';

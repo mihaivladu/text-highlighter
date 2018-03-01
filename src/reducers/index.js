@@ -4,17 +4,23 @@ import {
     OPEN_COMMENT_AREA,
     CLOSE_COMMENT_AREA,
     SUBMIT_COMMENT,
-    SET_TEXT_AREA_REF
+    SET_RENDERED_DATA
 } from '../actions/types';
 
-let id = 0;
-
 const data = (state = {
-    textAreaRef: null,
+    id: 0,
+    wasDataRendered: false,
     currentSelection: null,
     viewCommentBox: false,
     selections: []
 }, action = {}) => {
+    if (action.type === SET_RENDERED_DATA) {
+        return {
+            ...state,
+            wasDataRendered: true
+        };
+    }
+
     if (action.type === SET_CURRENT_SELECTION) {
         const {from, to, text, rectangles} = action;
 
@@ -56,23 +62,17 @@ const data = (state = {
     if (action.type === SUBMIT_COMMENT) {
         return {
             ...state,
+            id: state.id + 1,
             currentSelection: null,
             viewCommentBox: false,
             selections: [
                 ...state.selections,
                 {
                     ...state.currentSelection,
-                    id: ++id,
+                    id: state.id + 1,
                     comment: action.comment
                 }
             ]
-        };
-    }
-
-    if (action.type === SET_TEXT_AREA_REF) {
-        return {
-            ...state,
-            textAreaRef: action.textAreaRef
         };
     }
 

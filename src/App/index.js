@@ -12,7 +12,7 @@ const App = () => (
     <div className={styles['main-container']}>
         <div className={styles['text-container']}>
             <TextHighlighting>
-                <h3>Lorem ipsum</h3>
+                <h3>0123</h3>
                 {nl2br(TEXT)}
             </TextHighlighting>
         </div>
