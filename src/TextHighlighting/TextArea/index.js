@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 
 import {
     setCurrentSelection,
@@ -31,7 +31,7 @@ class TextArea extends Component {
 
         this.setCurrentSelection = this.setCurrentSelection.bind(this);
         this.hasSelection = this.hasSelection.bind(this);
-        this.getNestedElementsDetailsDetails = this.getNestedElementsDetailsDetails.bind(this);
+        this.getNestedElementsDetails = this.getNestedElementsDetails.bind(this);
         this.getElementsDetails = this.getElementsDetails.bind(this);
     }
 
@@ -134,7 +134,7 @@ class TextArea extends Component {
         return status;
     }
 
-    getNestedElementsDetailsDetails(children, keyIdentifier, textStartsAt, textEndsAt, shiftedIndex) {
+    getNestedElementsDetails(children, keyIdentifier, textStartsAt, textEndsAt, shiftedIndex) {
         const {selections, currentSelection} = this.props;
 
         let totalSelections = [...selections];
@@ -251,12 +251,12 @@ class TextArea extends Component {
                 const startingSelectionIndex = (maxTo <= textStartsAt ? textStartsAt : maxTo) - shiftedIndex + 1;
                 const unSelectedText = children.substring(startingSelectionIndex);
 
-                /*console.log('remaining: ', unSelectedText);*/
-
-                nestedElementsDetails.push({
-                    type: 'span',
-                    text: unSelectedText
-                });
+                if (unSelectedText !== '') {
+                    nestedElementsDetails.push({
+                        type: 'span',
+                        text: unSelectedText
+                    });
+                }
             }
         });
 
@@ -276,7 +276,7 @@ class TextArea extends Component {
                 const textEndsAt = shiftedIndex + children.length;
 
                 if (this.hasSelection(textStartsAt, textEndsAt)) {
-                    const newElements = this.getNestedElementsDetailsDetails(children, keyIdentifier, textStartsAt, textEndsAt, shiftedIndex);
+                    const newElements = this.getNestedElementsDetails(children, keyIdentifier, textStartsAt, textEndsAt, shiftedIndex);
                     elementsDetails = elementsDetails.concat(newElements);
                 } else {
                     elementsDetails.push({
@@ -294,7 +294,7 @@ class TextArea extends Component {
                             const textEndsAt = shiftedIndex + children.length;
 
                             if (this.hasSelection(textStartsAt, textEndsAt)) {
-                                const newElements = this.getNestedElementsDetailsDetails(children, `paragraph-child-${keyIdentifier}-${index}`, textStartsAt, textEndsAt, shiftedIndex);
+                                const newElements = this.getNestedElementsDetails(children, `paragraph-child-${keyIdentifier}-${index}`, textStartsAt, textEndsAt, shiftedIndex);
                                 elementsDetails = elementsDetails.concat(newElements);
                             } else {
                                 elementsDetails.push({
@@ -317,7 +317,7 @@ class TextArea extends Component {
                 const textEndsAt = shiftedIndex + children.props.children.length;
 
                 if (this.hasSelection(textStartsAt, textEndsAt)) {
-                    const newElements = this.getNestedElementsDetailsDetails(children.props.children, keyIdentifier, textStartsAt, textEndsAt, shiftedIndex);
+                    const newElements = this.getNestedElementsDetails(children.props.children, keyIdentifier, textStartsAt, textEndsAt, shiftedIndex);
                     elementsDetails.push({
                         type: children.type,
                         text: newElements
@@ -337,6 +337,8 @@ class TextArea extends Component {
     }
 
     render() {
+        console.log('ta render');
+
         const elementsDetails = this.getElementsDetails();
 
         return (
