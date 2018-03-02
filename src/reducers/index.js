@@ -12,7 +12,13 @@ const data = (state = {
     wasDataRendered: false,
     currentSelection: null,
     viewCommentBox: false,
-    selections: []
+    selections: [{
+        id: 1,
+        from: 495,
+        to: 502,
+        text: 'ultrices',
+        comment: 'Some comment :)'
+    }]
 }, action = {}) => {
     if (action.type === SET_RENDERED_DATA) {
         return {

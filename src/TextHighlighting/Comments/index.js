@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import nl2br from 'react-nl2br';
 
 import styles from './index.scss';
 import textAreaStyles from '../TextArea/index.scss';
 import selectedTextStyles from '../SelectedText/index.scss';
+import highlightingContainerStyles from '../../TextHighlighting/index.scss';
 
 const textAreaClass = textAreaStyles['text-area-container'];
 const selectedTextClass = selectedTextStyles['selected-text'];
+const mainContainerClass = highlightingContainerStyles['highlighting-container'];
 
 class Comments extends Component {
     static displayName = 'Comments';
@@ -20,12 +23,16 @@ class Comments extends Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            elementsDetails: []
+        };
+
+        this.isSelection = this.isSelection.bind(this);
         this.updatePositions = this.updatePositions.bind(this);
-        this.getElementsDetails = this.getElementsDetails.bind(this);
     }
 
     componentWillMount() {
-
+        this.updatePositions();
     }
 
     componentDidMount() {
@@ -36,12 +43,19 @@ class Comments extends Component {
         window.onresize = null;
     }
 
-    updatePositions() {
-        console.log('resize');
+    isSelection(textAreaChildNode, selection, usedIds) {
+        const {maxSelectionId} = this.props;
+        const hasSelectedClass = textAreaChildNode.className.indexOf(selectedTextClass) >= 0;
+        const isRenderedSelection = usedIds.indexOf(selection.id) === -1 && selection.id.toString() === textAreaChildNode.id;
+        const isUnRenderedSelection = textAreaChildNode.id === 'add_new' && selection.id === maxSelectionId && usedIds.indexOf(maxSelectionId) === -1;
+
+        return hasSelectedClass && (isRenderedSelection || isUnRenderedSelection);
     }
 
-    getElementsDetails() {
+    updatePositions() {
         const {maxSelectionId, selections} = this.props;
+        let elementsDetails = [];
+        let usedIds = [];
         const textAreaContainer = document.getElementsByClassName(textAreaClass)[0];
         const textAreaChildNodes = textAreaContainer.childNodes;
         const sortedSelections = [...selections];
@@ -50,55 +64,44 @@ class Comments extends Component {
             return sel1.from > sel2.from;
         });
 
-        let elementsDetails = [];
-        let usedIds = [];
-
         textAreaChildNodes.forEach(textAreaChildNode => {
-            const childNodesLength = textAreaChildNode.childNodes.length;
-            const hasSelectedClass = textAreaChildNode.className.indexOf(selectedTextClass) >= 0;
+            sortedSelections.forEach((selection) => {
+                const {comment} = selection;
 
-            sortedSelections.forEach((selection, index) => {
-                const {id, from, to, text, comment} = selection;
+                if (this.isSelection(textAreaChildNode, selection, usedIds)) {
+                    const range = document.createRange();
+                    range.setStart(textAreaChildNode, 0);
+                    range.setEnd(textAreaChildNode, 1);
 
-                if (hasSelectedClass) {
-                    if (usedIds.indexOf(selection.id) === -1 && selection.id.toString() === textAreaChildNode.id) {
-                        const range = document.createRange();
-                        range.setStart(textAreaChildNode, 0);
-                        range.setEnd(textAreaChildNode, 1);
+                    const rectangles = range.getClientRects();
+                    const mainContainer = document.getElementsByClassName(mainContainerClass)[0];
 
-                        const rectangles = range.getClientRects();
-                        const top = rectangles[rectangles.length - 1].top;
+                    console.log(mainContainer);
+                    console.log(rectangles[rectangles.length - 1].top, mainContainer.offsetTop, window.pageYOffset);
 
-                        elementsDetails.push({
-                            comment,
-                            top: rectangles[rectangles.length - 1].top
-                        });
+                    const top = rectangles[rectangles.length - 1].top - mainContainer.offsetTop + window.pageYOffset;
 
-                        usedIds.push(selection.id);
-                    } else if (textAreaChildNode.id === 'add_new' && selection.id === maxSelectionId && usedIds.indexOf(maxSelectionId) === -1) {
-                        const range = document.createRange();
-                        range.setStart(textAreaChildNode, 0);
-                        range.setEnd(textAreaChildNode, 1);
+                    elementsDetails.push({
+                        comment,
+                        top
+                    });
 
-                        const rectangles = range.getClientRects();
-                        const top = rectangles[rectangles.length - 1].top;
-
-                        elementsDetails.push({
-                            comment,
-                            top: rectangles[rectangles.length - 1].top
-                        });
-
+                    if (textAreaChildNode.id === 'add_new') {
                         usedIds.push(maxSelectionId);
+                    } else {
+                        usedIds.push(selection.id);
                     }
                 }
             });
         });
 
-        return elementsDetails;
+        this.setState({
+            elementsDetails
+        });
     }
 
     render() {
-        const elementsDetails = this.getElementsDetails();
+        const {elementsDetails} = this.state;
 
         return (
             <div className={styles['comments-container']}>
@@ -107,8 +110,8 @@ class Comments extends Component {
                         const {comment, top} = elementDetails;
 
                         return (
-                            <div key={index} className={styles['comment']} style={{top: `${top - 40}px`}}>
-                                {comment}
+                            <div key={index} className={styles['comment']} style={{top: `${top}px`}}>
+                                {nl2br(comment)}
                             </div>
                         );
                     })

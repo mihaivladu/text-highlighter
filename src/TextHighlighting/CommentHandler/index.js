@@ -29,7 +29,7 @@ class CommentHandler extends Component {
         const currentSelectionElement = document.getElementById('add_new');
 
         if (currentSelectionElement) {
-            this.updatePosition();
+
         } else {
             const {position} = this.props;
             const mainContainer = document.getElementsByClassName(mainContainerClass)[0];
@@ -43,6 +43,7 @@ class CommentHandler extends Component {
 
     componentDidMount() {
         window.onresize = () => this.updatePosition();
+
     }
 
     componentWillUnmount() {

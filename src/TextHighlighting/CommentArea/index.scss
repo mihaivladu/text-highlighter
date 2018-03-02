@@ -41,6 +41,10 @@
     .submit-btn {
       background-color: #2364ff;
       color: white;
+
+      &.disabled {
+        background-color: rgba(#2364ff, 0.5);
+      }
     }
 
     .cancel-btn {

@@ -25,7 +25,8 @@ class CommentArea extends Component {
         this.state = {
             top: 0,
             right: 0,
-            comment: ''
+            comment: '',
+            submitButtonDisabled: true
         };
 
         this.updatePosition = this.updatePosition.bind(this);
@@ -51,7 +52,25 @@ class CommentArea extends Component {
     }
 
     componentDidMount() {
+        this.textArea.focus();
+
         window.onresize = () => this.updatePosition();
+        window.onkeyup = (event) => {
+            console.log(event);
+
+            if (event.keyCode === 27) {
+                // ESC was pressed.
+                this.closeCommentArea();
+            } else if (event.ctrlKey && event.keyCode === 13) {
+                // CTRL + ENTER was pressed.
+                this.submitComment();
+            }
+        };
+    }
+
+    componentWillUnmount() {
+        window.onresize = null;
+        window.onkeyup = null;
     }
 
     updatePosition() {
@@ -67,24 +86,25 @@ class CommentArea extends Component {
         });
     }
 
-    componentWillUnmount() {
-        window.onresize = () => null;
-    }
-
     onCommentChange(event) {
+        let submitButtonDisabled = true;
+
+        if (event.target.value.trim() !== '') {
+            submitButtonDisabled = false;
+        }
+
         this.setState({
-            comment: event.target.value
+            comment: event.target.value,
+            submitButtonDisabled
         });
     }
 
     submitComment() {
-        this.props.submitComment({
-            comment: this.state.comment
-        });
-
-        this.setState({
-            comment: ''
-        });
+        if (this.state.comment.trim() !== '') {
+            this.props.submitComment({
+                comment: this.state.comment
+            });
+        }
     }
 
     closeCommentArea() {
@@ -92,18 +112,22 @@ class CommentArea extends Component {
     }
 
     render() {
-        console.log('render');
-        const {top, right, comment} = this.state;
+        const {top, right, comment, submitButtonDisabled} = this.state;
+
+        console.log('submitButtonDisabled', submitButtonDisabled);
 
         return (
             <div className={cn(styles['comment-area-container'])}
                  style={{top: `${top}px`, right: `${right}px`}}>
                 <div>Add a comment</div>
                 <div className={styles['textarea-container']}>
-                    <textarea rows="2" value={comment} onChange={this.onCommentChange} />
+                    <textarea rows="2" value={comment} onChange={this.onCommentChange} ref={(element) => {
+                        this.textArea = element;
+                    }} />
                 </div>
                 <div className={styles['buttons-container']}>
-                    <div className={styles['submit-btn']} onClick={this.submitComment}>
+                    <div className={cn(styles['submit-btn'], {[styles['disabled']]: submitButtonDisabled})}
+                         onClick={this.submitComment}>
                         Submit
                     </div>
                     <div className={styles['cancel-btn']} onClick={this.closeCommentArea}>
